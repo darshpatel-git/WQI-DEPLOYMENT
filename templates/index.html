@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Quality Index (WQI) Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Water Quality Index Calculator</h1>
+        
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        <div class="card">
+            <div class="card-header">
+                <h4>Enter Water Quality Parameters</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/predict">
+                    {% for param in parameters %}
+                    <div class="mb-3">
+                        <label for="{{ param }}" class="form-label">{{ param }}</label>
+                        <input type="number" step="0.1" class="form-control" id="{{ param }}" 
+                               name="{{ param }}" required>
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Calculate WQI</button>
+                </form>
+            </div>
+        </div>
+        
+        {% if show_result and prediction %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4>Prediction Results</h4>
+            </div>
+            <div class="card-body">
+                <h5>WQI Score: {{ prediction.wqi_score }}</h5>
+                <h5>WQI Classification: {{ prediction.wqi_class }}</h5>
+                <h5>LSTM Predicted Class: {{ prediction.predicted_class }}</h5>
+                <h5>Confidence: {{ prediction.confidence }}%</h5>
+                
+                <h6 class="mt-4">Input Parameters:</h6>
+                <ul>
+                    {% for param, value in prediction.parameters.items() %}
+                    <li>{{ param }}: {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="mt-4 text-center">
+            <p>API Endpoint: <code>/api/predict</code> (POST with JSON)</p>
+            <p>Health Check: <a href="/health">/health</a></p>
+        </div>
+    </div>
+</body>
+</html>
